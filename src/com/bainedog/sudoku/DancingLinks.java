@@ -6,10 +6,12 @@
 package com.bainedog.sudoku;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -85,25 +87,49 @@ class DancingLinks implements Iterable<List<List<String>>> {
         };
     }
 
+
     private void search() throws InterruptedException {
-        if (h.right.equals(h)) {
-            publishSolution();
-        } else {
-            Column c = chooseColumn();
-            cover(c);
-            for (Node r = c.down; !r.equals(c); r = r.down) {
-                o.push(r);
-                for (Node j = r.right; !j.equals(r); j = j.right) {
-                    cover(j.column);
+        Stack<Node> stack = new Stack<Node>();
+        stack.push(chooseColumn());
+        while (!stack.empty()) {
+            Node x = stack.pop();
+            if (x instanceof Column) {
+                Column c = (Column)x;
+                if (c.visited) {
+                    c.visited = false;
+                    uncover(c);
+                } else {
+                    c.visited = true;
+                    cover(c);
+                    stack.push(c);
+                    for (Node r = c.up; r != c; r = r.up) {
+                        stack.push(r);
+                    }
                 }
-                search();
-                r = o.pop(); c = r.column;
-                for (Node j = r.left; !j.equals(r); j = j.left) {
-                    uncover(j.column);
+            } else {
+                if (x.visited) {
+                    x.visited = false;
+                    Node r = o.pop();
+                    for (Node j = r.left; j != r; j = j.left) {
+                        uncover(j.column);
+                    }
+                } else {
+                    x.visited = true;
+                    Node r = x;
+                    o.push(r);
+                    for (Node j = r.right; j != r; j = j.right) {
+                        cover(j.column);
+                    }
+                    stack.push(r);
+                    if (h.right == h) {
+                        publishSolution();
+                    } else {
+                        stack.push(chooseColumn());
+                    }
                 }
             }
-            uncover(c);
         }
+        publishPoison();
     }
 
     private Column chooseColumn() {
@@ -139,48 +165,19 @@ class DancingLinks implements Iterable<List<List<String>>> {
 
     public static class Node {
 
-        protected Node() {
-            this.column = null;
-        }
-
         public Node(Column c) {
             this.column = c;
-            Node x = c;
-            while (x.down != null) {
-                x = x.down;
-            }
-            x.down = this;
-            this.up = x;
+            this.up = c.up;
+            this.down = c;
+
+            c.up.down = this;
+            c.up = this;
+            c.size += 1;
         }
 
-        public void linkHorizontally(Node other) {
+        public void link(Node other) {
             this.right = other;
             other.left = this;
-        }
-
-        public void linkVertically(Node other) {
-            this.down = other;
-            other.up = this;
-        }
-
-        public void unlinkHorizontally() {
-            this.left.right = this.right;
-            this.right.left = this.left;
-        }
-
-        public void unlinkVertically() {
-            this.down.up = this.up;
-            this.up.down = this.down;
-        }
-
-        public void relinkHorizontally() {
-            this.left.right = this;
-            this.right.left = this;
-        }
-
-        public void relinkVertically() {
-            this.up.down = this.down;
-            this.down.up = this.up;
         }
 
         Node left;
@@ -188,13 +185,19 @@ class DancingLinks implements Iterable<List<List<String>>> {
         Node up;
         Node down;
         final Column column;
+        boolean visited;
+
+        protected Node() {
+            this.column = null;
+        }
     }
 
     public static class Column extends Node {
 
         public Column(String name) {
-            super();
             this.name = name;
+            this.up = this;
+            this.down = this;
         }
 
         public static Column header() {
@@ -202,15 +205,7 @@ class DancingLinks implements Iterable<List<List<String>>> {
         }
 
         int size = 0;
-        final String name;
-
-        void close() {
-            Node n = this;
-            while (n.down != null) {
-                n = n.down;
-            }
-            n.linkVertically(this);
-        }
+        final String name;        
     }
 
     private void publishSolution() throws InterruptedException {

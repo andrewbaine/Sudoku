@@ -26,7 +26,6 @@ public class SolutionGenerator implements Iterable<Solution> {
         columns = new DancingLinks.Column[4 * length * length];
         this.initializeColumns(length);
         this.initializeRows(cells);
-        this.stitchColumns();
         dancingLinks = new DancingLinks(h);
     }
 
@@ -67,11 +66,11 @@ public class SolutionGenerator implements Iterable<Solution> {
 
             }
         }
-        this.h.linkHorizontally(this.columns[0]);
+        this.h.link(this.columns[0]);
         for (int i = 0; i < columns.length - 1; i++) {
-            columns[i].linkHorizontally(columns[i+1]);
+            columns[i].link(columns[i+1]);
         }
-        columns[columns.length - 1].linkHorizontally(this.h);
+        columns[columns.length - 1].link(this.h);
     }
     
     private void initializeRows(int[][] cells) {
@@ -86,19 +85,19 @@ public class SolutionGenerator implements Iterable<Solution> {
                         DancingLinks.Node current = first;
 
                         DancingLinks.Column columnConstraint = columns[length * length + j * length + n];
-                        current.linkHorizontally(new DancingLinks.Node(columnConstraint));
+                        current.link(new DancingLinks.Node(columnConstraint));
                         current = current.right;
 
                         DancingLinks.Column cellConstraint = columns[2 * length * length + i * length + j];
-                        current.linkHorizontally(new DancingLinks.Node(cellConstraint));
+                        current.link(new DancingLinks.Node(cellConstraint));
                         current = current.right;
 
                         int box = (i / order) * order + j / order;
                         DancingLinks.Column boxConstraint = columns[3 * length * length + box * length + n];
-                        current.linkHorizontally(new DancingLinks.Node(boxConstraint));
+                        current.link(new DancingLinks.Node(boxConstraint));
                         current = current.right;
 
-                        current.linkHorizontally(first);
+                        current.link(first);
                     }
                 }
             }
@@ -144,11 +143,5 @@ public class SolutionGenerator implements Iterable<Solution> {
     private final static String COLUMN = "column";
     private final static String NUMBER = "number";
     private final static String BOX = "box";
-
-    private void stitchColumns() {
-        for (Column c : this.columns) {
-            c.close();
-        }
-    }
 
 }
