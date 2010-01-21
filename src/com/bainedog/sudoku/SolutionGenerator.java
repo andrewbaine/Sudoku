@@ -17,6 +17,11 @@ import java.util.Map;
  */
 public class SolutionGenerator implements Iterable<Solution> {
 
+    private final static String ROW = "row";
+    private final static String COLUMN = "column";
+    private final static String NUMBER = "number";
+    private final static String BOX = "box";
+
     private final DancingLinks.Column[] columns;
     private final DancingLinks.Column h = DancingLinks.Column.header();
     private final DancingLinks dancingLinks;
@@ -26,7 +31,7 @@ public class SolutionGenerator implements Iterable<Solution> {
         columns = new DancingLinks.Column[4 * length * length];
         this.initializeColumns(length);
         this.initializeRows(cells);
-        dancingLinks = DancingLinks.recursiveDancingLinks(h);
+        dancingLinks = DancingLinks.iterativeDancingLinks(h);
     }
 
     private void initializeColumns(int length) {
@@ -138,10 +143,4 @@ public class SolutionGenerator implements Iterable<Solution> {
         }
         return new Solution(cells);
     }
-
-    private final static String ROW = "row";
-    private final static String COLUMN = "column";
-    private final static String NUMBER = "number";
-    private final static String BOX = "box";
-
 }

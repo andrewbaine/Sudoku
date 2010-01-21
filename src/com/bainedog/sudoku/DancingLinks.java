@@ -24,6 +24,8 @@ import java.util.logging.Logger;
  */
 abstract class DancingLinks implements Iterable<List<List<String>>> {
 
+    private final List<List<String>> POISON = new ArrayList<List<String>>();
+
     private final Stack<Node> o = new Stack<Node>();
     private final BlockingQueue<List<List<String>>> queue =
             new LinkedBlockingQueue<List<List<String>>>(100);
@@ -112,19 +114,15 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
             publishSolution();
         } else {
             Column c = chooseColumn();
-            cover(c);
+            c.cover();
             for (Node r = c.down; r != c; r = r.down) {
                 o.push(r);
-                for (Node j = r.right; j != r; j = j.right) {
-                    cover(j.column);
-                }
+                r.eachCoverColumn();
                 searchRecursive();
                 o.pop();
-                for (Node j = r.left; j != r; j = j.left) {
-                    uncover(j.column);
-                }
+                r.eachUncoverColumn();
             }
-            uncover(c);
+            c.uncover();
         }
     }
 
@@ -137,10 +135,10 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
                 Column c = (Column)x;
                 if (c.visited) {
                     c.visited = false;
-                    uncover(c);
+                    c.uncover();
                 } else {
                     c.visited = true;
-                    cover(c);
+                    c.cover();
                     stack.push(c);
                     for (Node r = c.up; r != c; r = r.up) {
                         stack.push(r);
@@ -150,16 +148,12 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
                 if (x.visited) {
                     x.visited = false;
                     Node r = o.pop();
-                    for (Node j = r.left; j != r; j = j.left) {
-                        uncover(j.column);
-                    }
+                    r.eachUncoverColumn();
                 } else {
                     x.visited = true;
                     Node r = x;
                     o.push(r);
-                    for (Node j = r.right; j != r; j = j.right) {
-                        cover(j.column);
-                    }
+                    r.eachCoverColumn();
                     stack.push(r);
                     if (h.right == h) {
                         publishSolution();
@@ -183,27 +177,13 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
         return c;
     }
 
-    private void cover(Column c) {
-        c.right.left = c.left; c.left.right = c.right;
-        for (Node i = c.down; !i.equals(c); i = i.down) {
-            for (Node j = i.right; !j.equals(i); j = j.right) {
-                j.down.up = j.up; j.up.down = j.down;
-                j.column.size -= 1;
-            }
-        }
-    }
-
-    private void uncover(Column c) {
-        for (Node i = c.up; !i.equals(c); i = i.up) {
-            for (Node j = i.left; !j.equals(i); j = j.left) {
-                j.column.size += 1;
-                j.down.up = j; j.up.down = j;
-            }
-        }
-        c.right.left = c; c.left.right = c;
-    }
-
     public static class Node {
+        Node left;
+        Node right;
+        Node up;
+        Node down;
+        final Column column;
+        boolean visited;
 
         public Node(Column c) {
             this.column = c;
@@ -215,24 +195,34 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
             c.size += 1;
         }
 
+        protected Node() {
+            this.column = null;
+        }
+
         public void link(Node other) {
             this.right = other;
             other.left = this;
         }
 
-        Node left;
-        Node right;
-        Node up;
-        Node down;
-        final Column column;
-        boolean visited;
+        public void eachCoverColumn() {
+            for (Node j = this.right; this != j; j = j.right) {
+                j.column.cover();
+            }
 
-        protected Node() {
-            this.column = null;
         }
+
+        private void eachUncoverColumn() {
+            for (Node j = this.left; this != j; j = j.left) {
+                j.column.uncover();
+            }
+        }
+
     }
 
     public static class Column extends Node {
+
+        int size = 0;
+        final String name;
 
         public Column(String name) {
             this.name = name;
@@ -244,8 +234,27 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
             return new Column(null);
         }
 
-        int size = 0;
-        final String name;        
+        private void cover() {
+            this.right.left = this.left;
+            this.left.right = this.right;
+            for (Node i = this.down; !this.equals(i); i = i.down) {
+                for (Node j = i.right; !j.equals(i); j = j.right) {
+                    j.down.up = j.up; j.up.down = j.down;
+                    j.column.size -= 1;
+                }
+            }
+        }
+
+        private void uncover() {
+            for (Node i = this.up; this != i; i = i.up) {
+                for (Node j = i.left; !j.equals(i); j = j.left) {
+                    j.column.size += 1;
+                    j.down.up = j; j.up.down = j;
+                }
+            }
+            this.right.left = this;
+            this.left.right = this;
+        }
     }
 
     private void publishSolution() throws InterruptedException {
@@ -264,6 +273,4 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
     private void publishPoison() throws InterruptedException {
         queue.put(POISON);
     }
-
-    private final List<List<String>> POISON = new ArrayList<List<String>>();
 }

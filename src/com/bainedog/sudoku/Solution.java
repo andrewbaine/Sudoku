@@ -69,10 +69,14 @@ public class Solution {
                                 Integer.toString(rowBits, 2), Integer.toString(mask, 2)));
             }
             if (columnBits != mask) {
-                throw new IllegalColumnException();
+                throw new IllegalColumnException(
+                        String.format("Column %d produces mask %s instead of %s", i,
+                            Integer.toString(columnBits, 2), Integer.toString(mask, 2)));
             }
             if (boxBits != mask) {
-                throw new IllegalBoxException();
+                throw new IllegalBoxException(
+                        String.format("Column %d produces mask %s instead of %s", i,
+                            Integer.toString(boxBits, 2), Integer.toString(mask, 2)));
             }
         }
     }
@@ -87,6 +91,16 @@ public class Solution {
             super(string);
         }
     };
-    class IllegalColumnException extends IllegalArgumentException {};
-    class IllegalBoxException extends IllegalArgumentException {};
+    class IllegalColumnException extends IllegalArgumentException {
+
+        private IllegalColumnException(String string) {
+            super(string);
+        }
+    };
+    class IllegalBoxException extends IllegalArgumentException {
+
+        private IllegalBoxException(String string) {
+            super(string);
+        }
+    };
 }
