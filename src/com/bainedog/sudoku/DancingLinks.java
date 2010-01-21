@@ -178,12 +178,12 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
     }
 
     public static class Node {
-        Node left;
-        Node right;
-        Node up;
-        Node down;
-        final Column column;
-        boolean visited;
+        protected Node left;
+        protected Node right;
+        protected Node up;
+        protected Node down;
+        public final Column column;
+        protected boolean visited;
 
         public Node(Column c) {
             this.column = c;
@@ -219,10 +219,10 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
 
     }
 
-    public static class Column extends Node {
+    public final static class Column extends Node {
 
-        int size = 0;
-        final String name;
+        private int size = 0;
+        public final String name;
 
         public Column(String name) {
             this.name = name;

@@ -86,23 +86,22 @@ public class SolutionGenerator implements Iterable<Solution> {
                 for (int n = 0; n < length; n++) {
                     if (cells[i][j] == -1 || cells[i][j] == n) {
                         DancingLinks.Column rowConstraint = columns[i * length + n];
-                        DancingLinks.Node first = new DancingLinks.Node(rowConstraint);
-                        DancingLinks.Node current = first;
+                        DancingLinks.Node row = new DancingLinks.Node(rowConstraint);
 
                         DancingLinks.Column columnConstraint = columns[length * length + j * length + n];
-                        current.link(new DancingLinks.Node(columnConstraint));
-                        current = current.right;
+                        DancingLinks.Node column = new DancingLinks.Node(columnConstraint);
 
                         DancingLinks.Column cellConstraint = columns[2 * length * length + i * length + j];
-                        current.link(new DancingLinks.Node(cellConstraint));
-                        current = current.right;
+                        DancingLinks.Node cell = new DancingLinks.Node(cellConstraint);
 
-                        int box = (i / order) * order + j / order;
-                        DancingLinks.Column boxConstraint = columns[3 * length * length + box * length + n];
-                        current.link(new DancingLinks.Node(boxConstraint));
-                        current = current.right;
+                        int b = (i / order) * order + j / order;
+                        DancingLinks.Column boxConstraint = columns[3 * length * length + b * length + n];
+                        DancingLinks.Node box = new DancingLinks.Node(boxConstraint);
 
-                        current.link(first);
+                        row.link(column);
+                        column.link(cell);
+                        cell.link(box);
+                        box.link(row);
                     }
                 }
             }
