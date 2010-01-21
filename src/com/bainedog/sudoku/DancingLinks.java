@@ -22,14 +22,34 @@ import java.util.logging.Logger;
  *
  * @author baine
  */
-class DancingLinks implements Iterable<List<List<String>>> {
+abstract class DancingLinks implements Iterable<List<List<String>>> {
 
     private final Stack<Node> o = new Stack<Node>();
     private final BlockingQueue<List<List<String>>> queue =
             new LinkedBlockingQueue<List<List<String>>>(100);
     private final Column h;
 
-    public DancingLinks(Column h) {
+    public static DancingLinks iterativeDancingLinks(Column h) {
+        return new DancingLinks(h) {
+            @Override
+            protected void search() throws InterruptedException {
+                searchIterative();
+            }
+        };
+    }
+
+    public static DancingLinks recursiveDancingLinks(Column h) {
+        return new DancingLinks(h) {
+            @Override
+            protected void search() throws InterruptedException {
+                searchRecursive();
+            }
+        };
+    }
+
+    protected abstract void search() throws InterruptedException;
+    
+    private DancingLinks(Column h) {
         this.h = h;
         new Thread(
             new Runnable() {
@@ -87,8 +107,28 @@ class DancingLinks implements Iterable<List<List<String>>> {
         };
     }
 
+    protected void searchRecursive() throws InterruptedException {
+        if (h.right == h) {
+            publishSolution();
+        } else {
+            Column c = chooseColumn();
+            cover(c);
+            for (Node r = c.down; r != c; r = r.down) {
+                o.push(r);
+                for (Node j = r.right; j != r; j = j.right) {
+                    cover(j.column);
+                }
+                searchRecursive();
+                o.pop();
+                for (Node j = r.left; j != r; j = j.left) {
+                    uncover(j.column);
+                }
+            }
+            uncover(c);
+        }
+    }
 
-    private void search() throws InterruptedException {
+    protected void searchIterative() throws InterruptedException {
         Stack<Node> stack = new Stack<Node>();
         stack.push(chooseColumn());
         while (!stack.empty()) {

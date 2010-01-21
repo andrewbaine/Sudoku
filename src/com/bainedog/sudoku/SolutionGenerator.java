@@ -26,7 +26,7 @@ public class SolutionGenerator implements Iterable<Solution> {
         columns = new DancingLinks.Column[4 * length * length];
         this.initializeColumns(length);
         this.initializeRows(cells);
-        dancingLinks = new DancingLinks(h);
+        dancingLinks = DancingLinks.recursiveDancingLinks(h);
     }
 
     private void initializeColumns(int length) {
