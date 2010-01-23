@@ -5,7 +5,6 @@
 
 package com.bainedog.sudoku;
 
-import com.bainedog.sudoku.DancingLinks.Column;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +42,7 @@ public class SolutionGenerator implements Iterable<Solution> {
         for (int i = 0; i < length; i++) {
             for (int n = 0; n < length; n++) {
                 columns[index++] = new DancingLinks.Column(
-                        String.format(formatString, ROW, i, NUMBER, n));
+                        String.format(formatString, ROW, i, NUMBER, n), h);
             }
         }
 
@@ -51,7 +50,7 @@ public class SolutionGenerator implements Iterable<Solution> {
         for (int j = 0; j < length; j++) {
             for (int n = 0; n < length; n++) {
                 columns[index++] = new DancingLinks.Column(
-                        String.format(formatString, COLUMN, j, NUMBER, n));
+                        String.format(formatString, COLUMN, j, NUMBER, n), h);
             }
         }
 
@@ -59,7 +58,7 @@ public class SolutionGenerator implements Iterable<Solution> {
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < length; j++) {
                 columns[index++] = new DancingLinks.Column(
-                        String.format(formatString, ROW, i, COLUMN, j));
+                        String.format(formatString, ROW, i, COLUMN, j), h);
             }
         }
 
@@ -67,15 +66,10 @@ public class SolutionGenerator implements Iterable<Solution> {
         for (int b = 0; b < length; b++) {
             for (int n = 0; n < length; n++) {
                 columns[index++] = new DancingLinks.Column(
-                        String.format(formatString, BOX, b, NUMBER, n));
+                        String.format(formatString, BOX, b, NUMBER, n), h);
 
             }
         }
-        this.h.link(this.columns[0]);
-        for (int i = 0; i < columns.length - 1; i++) {
-            columns[i].link(columns[i+1]);
-        }
-        columns[columns.length - 1].link(this.h);
     }
     
     private void initializeRows(int[][] cells) {
@@ -89,19 +83,14 @@ public class SolutionGenerator implements Iterable<Solution> {
                         DancingLinks.Node row = new DancingLinks.Node(rowConstraint);
 
                         DancingLinks.Column columnConstraint = columns[length * length + j * length + n];
-                        DancingLinks.Node column = new DancingLinks.Node(columnConstraint);
+                        DancingLinks.Node column = new DancingLinks.Node(columnConstraint, row);
 
                         DancingLinks.Column cellConstraint = columns[2 * length * length + i * length + j];
-                        DancingLinks.Node cell = new DancingLinks.Node(cellConstraint);
+                        DancingLinks.Node cell = new DancingLinks.Node(cellConstraint, row);
 
                         int b = (i / order) * order + j / order;
                         DancingLinks.Column boxConstraint = columns[3 * length * length + b * length + n];
-                        DancingLinks.Node box = new DancingLinks.Node(boxConstraint);
-
-                        row.link(column);
-                        column.link(cell);
-                        cell.link(box);
-                        box.link(row);
+                        DancingLinks.Node box = new DancingLinks.Node(boxConstraint, row);
                     }
                 }
             }

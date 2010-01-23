@@ -6,12 +6,10 @@
 package com.bainedog.sudoku;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -182,26 +180,33 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
         protected Node right;
         protected Node up;
         protected Node down;
-        public final Column column;
+        private Column column;
         protected boolean visited;
 
-        public Node(Column c) {
-            this.column = c;
-            this.up = c.up;
-            this.down = c;
-
-            c.up.down = this;
-            c.up = this;
-            c.size += 1;
-        }
-
-        protected Node() {
+        private Node() {
+            this.left = this;
+            this.right = this;
+            this.up = this;
+            this.down = this;
             this.column = null;
         }
 
-        public void link(Node other) {
-            this.right = other;
-            other.left = this;
+        public Node(Column c) {
+            this();
+            this.column = c;
+            c.addAtBottom(this);
+        }
+
+        public Node(Column c, Node row) {
+            this(c);
+            row.addAtRight(this);
+        }
+
+        protected void addAtRight(Node node) {
+            this.left.right = node;
+            node.right = this;
+            node.left = this.left;
+            this.left = node;
         }
 
         public void eachCoverColumn() {
@@ -224,14 +229,26 @@ abstract class DancingLinks implements Iterable<List<List<String>>> {
         private int size = 0;
         public final String name;
 
-        public Column(String name) {
+        private Column(String name) {
+            super();
             this.name = name;
-            this.up = this;
-            this.down = this;
+        }
+
+        public Column(String name, Column h) {
+            this(name);
+            h.addAtRight(this);
         }
 
         public static Column header() {
             return new Column(null);
+        }
+
+        private void addAtBottom(Node n) {
+            this.up.down = n;
+            n.down = this;
+            n.up = this.up;
+            this.up = n;
+            this.size += 1;
         }
 
         private void cover() {
