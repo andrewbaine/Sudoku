@@ -11,7 +11,7 @@ import java.util.BitSet;
  *
  * @author baine
  */
-public class Solution {
+public class Solution implements Sudoku {
 
     public Solution(int[][] cells) {
         validate(cells);

@@ -14,15 +14,7 @@ public class Main {
     public static void main(String[] args) {
 
         for (Solution s : new SolutionGenerator(cells)) {
-            int stop = (int)(Math.pow(s.getOrder(), 2));
-            for (int i = 0; i < stop; i++) {
-                String line = "";
-                for (int j = 0; j < stop; j++) {
-                    line += s.get(i,j) + " ";
-                }
-                System.out.println(line);
-            }
-            System.out.println();
+            System.out.println(Util.toString(s));
         }
         System.out.println("Done");
         System.exit(0);
