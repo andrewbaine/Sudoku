@@ -9,8 +9,11 @@ package com.bainedog.sudoku;
  *
  * @author baine
  */
-public interface Sudoku {
+public abstract class Sudoku {
 
-    int getOrder();
-    int get(int i, int j);
+    public abstract int getOrder();
+    public abstract int get(int i, int j);
+    public final int getLength() {
+        return getOrder() * getOrder();
+    }
 }
