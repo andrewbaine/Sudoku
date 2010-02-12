@@ -12,7 +12,7 @@ import java.util.Stack;
  * @author andrew
  */
 
-class IterativeDancingLinks extends DancingLinks {
+public class IterativeDancingLinks extends DancingLinks {
 
     @Override
     protected void search(DancingLinksHelper helper) throws InterruptedException {

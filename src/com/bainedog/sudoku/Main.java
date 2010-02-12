@@ -5,6 +5,7 @@
 
 package com.bainedog.sudoku;
 
+import com.bainedog.dlx.IterativeDancingLinks;
 import com.bainedog.dlx.RecursiveDancingLinks;
 import java.util.Iterator;
 
@@ -16,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        SolutionGenerator solutionGenerator = new SolutionGenerator(new RecursiveDancingLinks());
+        SolutionGenerator solutionGenerator = new SolutionGenerator(new IterativeDancingLinks());
 
         for (Solution s : solutionGenerator.solutions(new Puzzle(cells))) {
             System.out.println(Util.toString(s));
