@@ -11,9 +11,39 @@ package com.bainedog.sudoku;
  */
 public abstract class Sudoku {
 
-    public abstract int getOrder();
-    public abstract int get(int i, int j);
+    protected Sudoku(Integer[][] cells) {
+        this.cells = new Integer[cells.length][cells[0].length];
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+                this.setCell(i, j, cells[i][j]);
+            }
+        }
+    }
+
+    protected Sudoku(int[][] cells) {
+        this.cells = new Integer[cells.length][cells[0].length];
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells.length; j++) {
+                this.setCell(i, j, (cells[i][j] >= 0 ? cells[i][j] : null));
+            }
+        }
+    }
+
+    public final int getOrder() {
+        return (int) Math.round(Math.sqrt(cells.length));
+    }
+
     public final int getLength() {
         return getOrder() * getOrder();
     }
+
+    public final Integer get(int i, int j) {
+        return cells[i][j];
+    }
+
+    protected void setCell(Integer i, Integer j, Integer n) {
+        this.cells[i][j] = n;
+    }
+
+    private final Integer[][] cells;
 }

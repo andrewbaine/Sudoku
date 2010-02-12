@@ -25,7 +25,7 @@ public class Node {
         this.column = null;
     }
 
-    Node(Column c) {
+    public Node(Column c) {
         this();
         this.column = c;
         c.addAtBottom(this);

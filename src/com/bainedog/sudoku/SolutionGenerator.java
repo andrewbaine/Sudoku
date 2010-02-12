@@ -5,6 +5,10 @@
 
 package com.bainedog.sudoku;
 
+import com.bainedog.dlx.Column;
+import com.bainedog.dlx.DLX;
+import com.bainedog.dlx.Node;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,19 +25,20 @@ public class SolutionGenerator {
     private final static String NUMBER = "number";
     private final static String BOX = "box";
 
-    private final DancingLinks.Column[] columns;
-    private final DancingLinks.Column h = DancingLinks.Column.header();
-    private DancingLinks dancingLinks;
+    private final DLX dancingLinks;
 
-    public SolutionGenerator(int[][] cells) {
-        int length = cells.length;
-        columns = new DancingLinks.Column[4 * length * length];
-        this.initializeColumns(length);
-        this.initializeRows(cells);
-        this.dancingLinks.setHeader(this.h);
+    public SolutionGenerator(DLX dancingLinks) {
+        this.dancingLinks = dancingLinks;
     }
 
-    private void initializeColumns(int length) {
+
+
+    private static final Column header(Puzzle puzzle) {
+        final Column h = Column.header();
+        int length = puzzle.getLength();
+
+        Column[] columns = new Column[4 * length * length];
+
         int index = 0;
 
         String formatString = "%s=%d,%s=%d";
@@ -41,7 +46,7 @@ public class SolutionGenerator {
         // row constraints
         for (int i = 0; i < length; i++) {
             for (int n = 0; n < length; n++) {
-                columns[index++] = new DancingLinks.Column(
+                columns[index++] = new Column(
                         String.format(formatString, ROW, i, NUMBER, n), h);
             }
         }
@@ -49,7 +54,7 @@ public class SolutionGenerator {
         // column constraints
         for (int j = 0; j < length; j++) {
             for (int n = 0; n < length; n++) {
-                columns[index++] = new DancingLinks.Column(
+                columns[index++] = new Column(
                         String.format(formatString, COLUMN, j, NUMBER, n), h);
             }
         }
@@ -57,7 +62,7 @@ public class SolutionGenerator {
         // cell constraints
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < length; j++) {
-                columns[index++] = new DancingLinks.Column(
+                columns[index++] = new Column(
                         String.format(formatString, ROW, i, COLUMN, j), h);
             }
         }
@@ -65,57 +70,61 @@ public class SolutionGenerator {
         // box constraints
         for (int b = 0; b < length; b++) {
             for (int n = 0; n < length; n++) {
-                columns[index++] = new DancingLinks.Column(
+                columns[index++] = new Column(
                         String.format(formatString, BOX, b, NUMBER, n), h);
 
             }
         }
-    }
-    
-    private void initializeRows(int[][] cells) {
-        int length = cells.length;
-        int order = (int) Math.round(Math.sqrt(length));
+
+        int order = puzzle.getOrder();
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < length; j++) {
                 for (int n = 0; n < length; n++) {
-                    if (cells[i][j] == -1 || cells[i][j] == n) {
-                        DancingLinks.Column rowConstraint = columns[i * length + n];
-                        DancingLinks.Node row = new DancingLinks.Node(rowConstraint);
+                    if (puzzle.get(i, j) == null || puzzle.get(i, j) == n) {
+                        Column rowConstraint = columns[i * length + n];
+                        Node row = new Node(rowConstraint);
 
-                        DancingLinks.Column columnConstraint = columns[length * length + j * length + n];
-                        DancingLinks.Node column = new DancingLinks.Node(columnConstraint, row);
+                        Column columnConstraint = columns[length * length + j * length + n];
+                        Node column = new Node(columnConstraint, row);
 
-                        DancingLinks.Column cellConstraint = columns[2 * length * length + i * length + j];
-                        DancingLinks.Node cell = new DancingLinks.Node(cellConstraint, row);
+                        Column cellConstraint = columns[2 * length * length + i * length + j];
+                        Node cell = new Node(cellConstraint, row);
 
                         int b = (i / order) * order + j / order;
-                        DancingLinks.Column boxConstraint = columns[3 * length * length + b * length + n];
-                        DancingLinks.Node box = new DancingLinks.Node(boxConstraint, row);
+                        Column boxConstraint = columns[3 * length * length + b * length + n];
+                        Node box = new Node(boxConstraint, row);
                     }
                 }
             }
         }
+
+        return h;
     }
 
-    public Iterator<Solution> solutionIterator() {
+    public Iterable<Solution> solutions(Puzzle puzzle) {
 
-        this.dancingLinks.setHeader(SolutionGenerator.this.h);
-        
-        return new Iterator<Solution>() {
+        final Column h = SolutionGenerator.header(puzzle);
+        final Iterator<List<List<String>>> iterator = this.dancingLinks.solutions(h).iterator();
 
-            public boolean hasNext() {
-                return iterator.hasNext();
+        return new Iterable<Solution>() {
+            public Iterator<Solution> iterator() {
+                return new Iterator<Solution>() {
+
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    public Solution next() {
+                        return translate(iterator.next());
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException("Remove not supported.");
+                    }
+                    
+                };
             }
 
-            public Solution next() {
-                return translate(iterator.next());
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-            private final Iterator<List<List<String>>> iterator =
-                    SolutionGenerator.this.dancingLinks.solutionIterator();
         };
     }
 
@@ -135,4 +144,5 @@ public class SolutionGenerator {
         }
         return new Solution(cells);
     }
+
 }

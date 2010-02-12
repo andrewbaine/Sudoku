@@ -14,21 +14,8 @@ import java.util.BitSet;
 public class Solution extends Sudoku {
 
     public Solution(int[][] cells) {
+        super(cells);
         validate(cells);
-        this.cells = new int[cells.length][cells.length];
-        for (int i = 0;i < cells.length; i++) {
-            for (int j = 0; j < cells.length; j++) {
-                this.cells[i][j] = cells[i][j];
-            }
-        }
-    }
-
-    public int getOrder() {
-        return (int)(Math.sqrt(this.cells.length));
-    }
-
-    public int get(int i, int j) {
-        return cells[i][j];
     }
 
     private void validate(int[][] cells) {
