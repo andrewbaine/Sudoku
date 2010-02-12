@@ -5,6 +5,8 @@
 
 package com.bainedog.sudoku;
 
+import java.util.Iterator;
+
 /**
  *
  * @author baine
@@ -13,7 +15,17 @@ public class Main {
 
     public static void main(String[] args) {
 
-        for (Solution s : new SolutionGenerator(cells)) {
+        SolutionGenerator s = new SolutionGenerator(cells);
+        s.
+        Iterable<Solution> iterable = new Iterable<Solution>() {
+
+
+            public Iterator<Solution> iterator() {
+
+            }
+
+        }
+        for (Solution s : new SolutionGenerator(cells).solutionIterator()) {
             System.out.println(Util.toString(s));
         }
         System.out.println("Done");

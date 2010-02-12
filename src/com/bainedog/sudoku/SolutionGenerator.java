@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author baine
  */
-public class SolutionGenerator implements Iterable<Solution> {
+public class SolutionGenerator {
 
     private final static String ROW = "row";
     private final static String COLUMN = "column";
@@ -23,14 +23,14 @@ public class SolutionGenerator implements Iterable<Solution> {
 
     private final DancingLinks.Column[] columns;
     private final DancingLinks.Column h = DancingLinks.Column.header();
-    private final DancingLinks dancingLinks;
+    private DancingLinks dancingLinks;
 
     public SolutionGenerator(int[][] cells) {
         int length = cells.length;
         columns = new DancingLinks.Column[4 * length * length];
         this.initializeColumns(length);
         this.initializeRows(cells);
-        dancingLinks = DancingLinks.iterativeDancingLinks(h);
+        this.dancingLinks.setHeader(this.h);
     }
 
     private void initializeColumns(int length) {
@@ -97,7 +97,10 @@ public class SolutionGenerator implements Iterable<Solution> {
         }
     }
 
-    public Iterator<Solution> iterator() {
+    public Iterator<Solution> solutionIterator() {
+
+        this.dancingLinks.setHeader(SolutionGenerator.this.h);
+        
         return new Iterator<Solution>() {
 
             public boolean hasNext() {
@@ -111,7 +114,8 @@ public class SolutionGenerator implements Iterable<Solution> {
             public void remove() {
                 throw new UnsupportedOperationException();
             }
-            Iterator<List<List<String>>> iterator = SolutionGenerator.this.dancingLinks.iterator();
+            private final Iterator<List<List<String>>> iterator =
+                    SolutionGenerator.this.dancingLinks.solutionIterator();
         };
     }
 
