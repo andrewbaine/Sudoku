@@ -8,7 +8,8 @@ package com.bainedog.dlx;
  *
  * @author andrew
  */
-public class Node {
+
+class Node {
 
     protected Node left;
     protected Node right;
@@ -25,13 +26,13 @@ public class Node {
         this.column = null;
     }
 
-    public Node(Column c) {
+    Node(Column c) {
         this();
         this.column = c;
         c.addAtBottom(this);
     }
 
-    public Node(Column c, Node row) {
+    Node(Column c, Node row) {
         this(c);
         row.addAtRight(this);
     }
@@ -43,14 +44,14 @@ public class Node {
         this.left = node;
     }
 
-    public void eachCoverColumn() {
+    void eachCoverColumn() {
         for (Node j = this.right; this != j; j = j.right) {
             j.column.cover();
         }
 
     }
 
-    public void eachUncoverColumn() {
+    void eachUncoverColumn() {
         for (Node j = this.left; this != j; j = j.left) {
             j.column.uncover();
         }

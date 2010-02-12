@@ -7,7 +7,6 @@ package com.bainedog.sudoku;
 
 import com.bainedog.dlx.Column;
 import com.bainedog.dlx.DLX;
-import com.bainedog.dlx.Node;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,76 +30,6 @@ public class SolutionGenerator {
         this.dancingLinks = dancingLinks;
     }
 
-
-
-    private static final Column header(Puzzle puzzle) {
-        final Column h = Column.header();
-        int length = puzzle.getLength();
-
-        Column[] columns = new Column[4 * length * length];
-
-        int index = 0;
-
-        String formatString = "%s=%d,%s=%d";
-
-        // row constraints
-        for (int i = 0; i < length; i++) {
-            for (int n = 0; n < length; n++) {
-                columns[index++] = new Column(
-                        String.format(formatString, ROW, i, NUMBER, n), h);
-            }
-        }
-
-        // column constraints
-        for (int j = 0; j < length; j++) {
-            for (int n = 0; n < length; n++) {
-                columns[index++] = new Column(
-                        String.format(formatString, COLUMN, j, NUMBER, n), h);
-            }
-        }
-
-        // cell constraints
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < length; j++) {
-                columns[index++] = new Column(
-                        String.format(formatString, ROW, i, COLUMN, j), h);
-            }
-        }
-
-        // box constraints
-        for (int b = 0; b < length; b++) {
-            for (int n = 0; n < length; n++) {
-                columns[index++] = new Column(
-                        String.format(formatString, BOX, b, NUMBER, n), h);
-
-            }
-        }
-
-        int order = puzzle.getOrder();
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < length; j++) {
-                for (int n = 0; n < length; n++) {
-                    if (puzzle.get(i, j) == null || puzzle.get(i, j) == n) {
-                        Column rowConstraint = columns[i * length + n];
-                        Node row = new Node(rowConstraint);
-
-                        Column columnConstraint = columns[length * length + j * length + n];
-                        Node column = new Node(columnConstraint, row);
-
-                        Column cellConstraint = columns[2 * length * length + i * length + j];
-                        Node cell = new Node(cellConstraint, row);
-
-                        int b = (i / order) * order + j / order;
-                        Column boxConstraint = columns[3 * length * length + b * length + n];
-                        Node box = new Node(boxConstraint, row);
-                    }
-                }
-            }
-        }
-
-        return h;
-    }
-
     public Iterable<Solution> solutions(Puzzle puzzle) {
 
         final Column h = SolutionGenerator.header(puzzle);
@@ -121,11 +50,70 @@ public class SolutionGenerator {
                     public void remove() {
                         throw new UnsupportedOperationException("Remove not supported.");
                     }
-                    
+
                 };
             }
 
         };
+    }
+
+    private static final Column header(Puzzle puzzle) {
+        final Column h = Column.header();
+        int length = puzzle.getLength();
+
+        Column[] columns = new Column[4 * length * length];
+
+        int index = 0;
+
+        String formatString = "%s=%d,%s=%d";
+
+        // row constraints
+        for (int i = 0; i < length; i++) {
+            for (int n = 0; n < length; n++) {
+                columns[index++] = h.addColumn(String.format(formatString, ROW, i, NUMBER, n));
+            }
+        }
+
+        // column constraints
+        for (int j = 0; j < length; j++) {
+            for (int n = 0; n < length; n++) {
+                columns[index++] = h.addColumn(String.format(formatString, COLUMN, j, NUMBER, n));
+            }
+        }
+
+        // cell constraints
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                columns[index++] = h.addColumn(String.format(formatString, ROW, i, COLUMN, j));
+            }
+        }
+
+        // box constraints
+        for (int b = 0; b < length; b++) {
+            for (int n = 0; n < length; n++) {
+                columns[index++] = h.addColumn(
+                        String.format(formatString, BOX, b, NUMBER, n));
+
+            }
+        }
+
+        int order = puzzle.getOrder();
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                for (int n = 0; n < length; n++) {
+                    if (puzzle.get(i, j) == null || puzzle.get(i, j) == n) {
+                        Column rowConstraint = columns[i * length + n];
+                        Column columnConstraint = columns[length * length + j * length + n];
+                        Column cellConstraint = columns[2 * length * length + i * length + j];
+                        int b = (i / order) * order + j / order;
+                        Column boxConstraint = columns[3 * length * length + b * length + n];
+                        Column.stitchRow(rowConstraint, columnConstraint, cellConstraint, boxConstraint);
+                    }
+                }
+            }
+        }
+
+        return h;
     }
 
     private static Solution translate(List<List<String>> list) {

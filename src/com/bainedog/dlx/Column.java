@@ -13,6 +13,12 @@ public final class Column extends Node {
     private int size = 0;
     public final String name;
 
+    public Column addColumn(String name) {
+        Column result = new Column(name);
+        this.addAtRight(result);
+        return result;
+    }
+
     private Column(String name) {
         super();
         this.name = name;
@@ -73,5 +79,12 @@ public final class Column extends Node {
             }
         }
         return c;
+    }
+
+    public static void stitchRow(Column c, Column... columns) {
+        Node n = new Node(c);
+        for (int i = 0; i < columns.length; i++) {
+            new Node(columns[i], n);
+        }
     }
 }
