@@ -176,7 +176,7 @@ public class SolutionTest {
         assertEquals(3, sol.getOrder());
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                assertEquals(cells[i][j], sol.get(i, j));
+                assertEquals(Integer.valueOf(cells[i][j]), sol.get(i, j));
             }
         }
 
@@ -185,7 +185,7 @@ public class SolutionTest {
         assertEquals(2, sol.getOrder());
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                assertEquals(cells[i][j], sol.get(i, j));
+                assertEquals(Integer.valueOf(cells[i][j]), sol.get(i, j));
             }
         }
 
@@ -194,7 +194,7 @@ public class SolutionTest {
         assertEquals(1, sol.getOrder());
         for (int i = 0; i < 1; i++) {
             for (int j = 0; j < 1; j++) {
-                assertEquals(cells[i][j], sol.get(i, j));
+                assertEquals(Integer.valueOf(cells[i][j]), sol.get(i, j));
             }
         }
     }
