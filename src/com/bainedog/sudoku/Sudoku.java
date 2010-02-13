@@ -23,7 +23,7 @@ public abstract class Sudoku {
     protected Sudoku(int[][] cells) {
         this.cells = new Integer[cells.length][cells[0].length];
         for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells.length; j++) {
+            for (int j = 0; j < cells[0].length; j++) {
                 this.setCell(i, j, (cells[i][j] >= 0 ? cells[i][j] : null));
             }
         }
