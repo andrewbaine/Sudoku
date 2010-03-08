@@ -5,6 +5,13 @@
 
 package com.bainedog.sudoku;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
 /**
  *
  * @author baine
@@ -45,6 +52,28 @@ public class Util {
         }
         result.append("+\n");
         return result.toString();
+    }
+
+    private static Puzzle readPuzzle(InputStream in, char blank, char separator) {
+        Map <Character, Integer> symbols = new HashMap<Character, Integer>();
+        Scanner scanner = new Scanner(in);
+
+        List<String> lines = new ArrayList<String>();
+        int count = 0;
+        while (scanner.hasNextLine()) {
+           String line = scanner.nextLine();
+           lines.add(scanner.nextLine());
+        }
+
+
+        int[][] cells = new int[lines.size()][lines.size()];
+
+        for (int i = 0; i < lines.size(); i++) {
+            String[] strings = lines.get(i).split(Character.toString(separator));
+
+        }
+
+        return new Puzzle(cells);
     }
 
     private static final String CHARS = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
