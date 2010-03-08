@@ -24,9 +24,6 @@ abstract class DancingLinks implements DLX {
     private static final Logger LOGGER = Logger.getLogger(DancingLinks.class.getName());
     private static final List<List<String>> POISON = new ArrayList<List<String>>();
 
-    public DancingLinks() {
-    }
-
     protected abstract void search(DancingLinksHelper helper) throws InterruptedException;
 
     public Iterable<List<List<String>>> solutions(final Column h) {
