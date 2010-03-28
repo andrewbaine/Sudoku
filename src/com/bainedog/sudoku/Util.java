@@ -19,9 +19,16 @@ import java.util.Scanner;
 public class Util {
 
     public static String toString(Sudoku sudoku) {
-        int order = sudoku.getOrder();
+        int order = sudoku.order;
+        int length = order * order;
+        Integer[][] cells = new Integer[length][length];
+        for (Sudoku.Triple t : sudoku.triples) {
+            cells[t.row][t.column] = t.number;
+        }
+
         StringBuilder str = new StringBuilder();
         String breakString = breakString(order);
+
         for (int i = 0; i < order * order; i++) {
             if (i % order == 0) {
                     str.append(breakString);
@@ -31,8 +38,8 @@ public class Util {
                 if (j % order == 0) {
                     str.append("| ");
                 }
-                int index = sudoku.get(i, j);
-                char c = index < 0 ? ' ' : CHARS.charAt(index);
+                Integer index = cells[i][j];
+                char c = index == null ? ' ' : CHARS.charAt(index);
                 str.append(c).append(' ');
 
             }
@@ -52,28 +59,6 @@ public class Util {
         }
         result.append("+\n");
         return result.toString();
-    }
-
-    private static Puzzle readPuzzle(InputStream in, char blank, char separator) {
-        Map <Character, Integer> symbols = new HashMap<Character, Integer>();
-        Scanner scanner = new Scanner(in);
-
-        List<String> lines = new ArrayList<String>();
-        int count = 0;
-        while (scanner.hasNextLine()) {
-           String line = scanner.nextLine();
-           lines.add(scanner.nextLine());
-        }
-
-
-        int[][] cells = new int[lines.size()][lines.size()];
-
-        for (int i = 0; i < lines.size(); i++) {
-            String[] strings = lines.get(i).split(Character.toString(separator));
-
-        }
-
-        return new Puzzle(cells);
     }
 
     private static final String CHARS = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -9,9 +9,11 @@ import com.bainedog.dlx.Column;
 import com.bainedog.dlx.DLX;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -30,20 +32,20 @@ public class SolutionGenerator {
         this.dancingLinks = dancingLinks;
     }
 
-    public Iterable<Solution> solutions(Puzzle puzzle) {
+    public Iterable<Sudoku> solutions(Sudoku puzzle) {
 
         final Column h = SolutionGenerator.header(puzzle);
         final Iterator<List<List<String>>> iterator = this.dancingLinks.solutions(h).iterator();
 
-        return new Iterable<Solution>() {
-            public Iterator<Solution> iterator() {
-                return new Iterator<Solution>() {
+        return new Iterable<Sudoku>() {
+            public Iterator<Sudoku> iterator() {
+                return new Iterator<Sudoku>() {
 
                     public boolean hasNext() {
                         return iterator.hasNext();
                     }
 
-                    public Solution next() {
+                    public Sudoku next() {
                         return translate(iterator.next());
                     }
 
@@ -57,9 +59,9 @@ public class SolutionGenerator {
         };
     }
 
-    private static final Column header(Puzzle puzzle) {
+    private static final Column header(Sudoku puzzle) {
         final Column h = Column.header();
-        int length = puzzle.getLength();
+        int length = puzzle.order * puzzle.order;
 
         Column[] columns = new Column[4 * length * length];
 
@@ -97,11 +99,17 @@ public class SolutionGenerator {
             }
         }
 
-        int order = puzzle.getOrder();
+        int order = puzzle.order;
+
+        Integer[][] grid = new Integer[length][length];
+        for (Sudoku.Triple t : puzzle.triples) {
+            grid[t.row][t.column] = t.number;
+        }
+
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < length; j++) {
                 for (int n = 0; n < length; n++) {
-                    if (puzzle.get(i, j) == null || puzzle.get(i, j) == n) {
+                    if (grid[i][j] == null || grid[i][j] == n) {
                         Column rowConstraint = columns[i * length + n];
                         Column columnConstraint = columns[length * length + j * length + n];
                         Column cellConstraint = columns[2 * length * length + i * length + j];
@@ -116,9 +124,9 @@ public class SolutionGenerator {
         return h;
     }
 
-    private static Solution translate(List<List<String>> list) {
+    private static Sudoku translate(List<List<String>> list) {
+        Set<Sudoku.Triple> triples = new HashSet<Sudoku.Triple>();
         int length = (int)Math.round(Math.sqrt(list.size()));
-        int[][] cells = new int[length][length];
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (List<String> headers : list) {
             for (String h : headers) {
@@ -128,9 +136,9 @@ public class SolutionGenerator {
                     map.put(token.substring(0, x), Integer.parseInt(token.substring(x+1)));
                 }
             }
-            cells[map.get(ROW)][map.get(COLUMN)] = map.get(NUMBER);
+            triples.add(new Sudoku.Triple(map.get(ROW), map.get(COLUMN), map.get(NUMBER)));
         }
-        return new Solution(cells);
+        return new Sudoku(triples);
     }
 
 }

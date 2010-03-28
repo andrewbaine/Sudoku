@@ -5,45 +5,57 @@
 
 package com.bainedog.sudoku;
 
+import java.util.Set;
+
 /**
  *
  * @author baine
  */
-public abstract class Sudoku {
+public final class Sudoku {
 
-    protected Sudoku(Integer[][] cells) {
-        this.cells = new Integer[cells.length][cells[0].length];
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells.length; j++) {
-                this.setCell(i, j, cells[i][j]);
+    public Sudoku(Set<Triple> triples) {
+        this((int)Math.round(Math.sqrt(Math.sqrt(triples.size()))), triples);
+    }
+
+    public Sudoku(int order, Set<Triple> triples) {
+        this.order = order;
+        this.triples = triples;
+    }
+
+    final Set<Triple> triples;
+    public final int order;
+
+    public static class Triple {
+
+        public Triple(int row, int column, int number) {
+            this.row = row;
+            this.column = column;
+            this.number = number;
+        }
+
+        public final int row;
+        public final int column;
+        public final int number;
+
+        @Override
+        public String toString() {
+            return String.format("(%d, %d, %d)", row, column, number);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof Triple) {
+                Triple t = (Triple)other;
+                return t.row == row && t.column == column && t.number == number;
+            } else {
+                return false;
             }
         }
     }
-
-    protected Sudoku(int[][] cells) {
-        this.cells = new Integer[cells.length][cells[0].length];
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[0].length; j++) {
-                this.setCell(i, j, (cells[i][j] >= 0 ? cells[i][j] : null));
-            }
-        }
-    }
-
-    public final int getOrder() {
-        return (int) Math.round(Math.sqrt(cells.length));
-    }
-
-    public final int getLength() {
-        return getOrder() * getOrder();
-    }
-
-    public final Integer get(int i, int j) {
-        return cells[i][j];
-    }
-
-    protected void setCell(Integer i, Integer j, Integer n) {
-        this.cells[i][j] = n;
-    }
-
-    private final Integer[][] cells;
+    
 }

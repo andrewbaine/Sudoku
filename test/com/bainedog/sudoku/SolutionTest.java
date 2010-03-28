@@ -5,6 +5,16 @@
 
 package com.bainedog.sudoku;
 
+import com.bainedog.dlx.IterativeDancingLinks;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,162 +50,44 @@ public class SolutionTest {
     
     @Test
     public void testRowConsistency() {
-        int[][] cells = new int[][] {
-            {1,2,1,2},
-            {3,0,3,0},
-            {2,3,2,3},
-            {0,1,0,1}
-        };
-        IllegalArgumentException e = null;
-        try {
-            Solution sol = new Solution(cells);
-        } catch(Solution.IllegalRowException ex) {
-            e = ex;
-        }
-        assertNotNull(e);
     }
 
     @Test
     public void testColumnConsistency() {
-        int[][] cells = new int[][] {
-            {1,3,2,0},
-            {2,0,3,1},
-            {1,3,2,0},
-            {2,0,3,1}
-
-        };
-        IllegalArgumentException e = null;
-        try {
-            Solution sol = new Solution(cells);
-        } catch(Solution.IllegalColumnException ex) {
-            e = ex;
-        }
-        assertNotNull(e);
     }
 
     @Test
     public void testBoxConsistency() {
-        int[][] cells = new int[][] {
-            {0,1,2,3},
-            {1,2,3,0},
-            {2,3,0,1},
-            {3,0,1,2}
-
-        };
-        IllegalArgumentException e = null;
-        try {
-            Solution sol = new Solution(cells);
-        } catch(Solution.IllegalBoxException ex) {
-            e = ex;
-        }
-        assertNotNull(e);
     }
 
     @Test
-    public void testSquare() {
-        int[][] cells = new int[][] {
-            {0,1,2},
-            {1,2,3},
-            {2,3,0},
-            {3,0,1}
-
-        };
-        IllegalArgumentException e = null;
+    public void testP1() {
         try {
-            Solution sol = new Solution(cells);
-        } catch(Solution.NotSquareException ex) {
-            e = ex;
-        }
-        assertNotNull(e);
-
-        cells = new int[][] {
-            {0,1,2,3},
-            {1,2,3,0},
-            {2,3,0,1},
-            {3,0,1,2}
-
-        };
-
-        try {
-            Solution sol = new Solution(cells);
-        } catch(Solution.IllegalBoxException ex) {
-            e = ex;
-        }
-        assertNotNull(e);
-    }
-
-    @Test
-    public void testOrdered() {
-      int[][] cells = new int[][] {
-            {0,1,2},
-            {1,2,3},
-            {2,3,0}
-        };
-        IllegalArgumentException e = null;
-        try {
-            Solution sol = new Solution(cells);
-        } catch(Solution.NotOrderedException ex) {
-            e = ex;
-        }
-        assertNotNull(e);
-    }
-
-    private int[][] test9x9() {
-        return new int[][] {
-            {5,3,4,6,7,8,0,1,2},
-            {6,7,2,1,0,5,3,4,8},
-            {1,0,8,3,4,2,5,6,7},
-            {8,5,0,7,6,1,4,2,3},
-            {4,2,6,8,5,3,7,0,1},
-            {7,1,3,0,2,4,8,5,6},
-            {0,6,1,5,3,7,2,8,4},
-            {2,8,7,4,1,0,6,3,5},
-            {3,4,5,2,8,6,1,7,0}
-        };
-    }
-
-    private int[][] test4x4() {
-        return new int[][] {
-            {0,1,2,3},
-            {2,3,0,1},
-            {1,0,3,2},
-            {3,2,1,0}
-        };
-    }
-
-    private int[][] test1x1() {
-        return new int[][] {
-            {0}
-        };
-    }
-
-    @Test
-    public void testGetAndOrder() {
-        int[][] cells = test9x9();
-        Solution sol = new Solution(cells);
-        assertEquals(3, sol.getOrder());
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                assertEquals(Integer.valueOf(cells[i][j]), sol.get(i, j));
+            Set<Sudoku.Triple> triples = new HashSet<Sudoku.Triple>();
+            int count;
+            Scanner in = new Scanner(new File("resources/p1.txt"));
+            for (count = 0; in.hasNextLine(); count++) {
+                String line = in.nextLine();
+                String[] tokens = line.split("\\s+");
+                for (int j = 0; j < tokens.length; j++) {
+                    String token = tokens[j];
+                    if (!token.equals(".")) {
+                        int x = Integer.parseInt(token) - 1;
+                        triples.add(new Sudoku.Triple(count, j, x));
+                    }
+                }
             }
-        }
+            int order = (int) Math.round(Math.sqrt(count));
+            Sudoku puzzle = new Sudoku(order, triples);
+            System.out.println(Util.toString(puzzle));
 
-        cells = test4x4();
-        sol = new Solution(cells);
-        assertEquals(2, sol.getOrder());
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                assertEquals(Integer.valueOf(cells[i][j]), sol.get(i, j));
-            }
-        }
+            SolutionGenerator g = new SolutionGenerator(new IterativeDancingLinks());
+            Iterable<Sudoku> solutions = g.solutions(puzzle);
+            System.out.println(Util.toString(solutions.iterator().next()));
 
-        cells = test1x1();
-        sol = new Solution(cells);
-        assertEquals(1, sol.getOrder());
-        for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 1; j++) {
-                assertEquals(Integer.valueOf(cells[i][j]), sol.get(i, j));
-            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SolutionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }
