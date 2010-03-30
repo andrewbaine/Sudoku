@@ -22,6 +22,18 @@ public final class Sudoku {
         this.triples = triples;
     }
 
+    @Override
+    public boolean equals(Object other) {
+
+        if (other instanceof Sudoku) {
+            Sudoku s = (Sudoku)other;
+            return this.triples.size() == s.triples.size()
+                    && this.triples.containsAll(s.triples);
+        } else {
+            return false;
+        }
+    }
+
     final Set<Triple> triples;
     public final int order;
 
