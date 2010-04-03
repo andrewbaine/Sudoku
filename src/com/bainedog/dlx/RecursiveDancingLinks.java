@@ -16,7 +16,7 @@ public class RecursiveDancingLinks extends DancingLinks {
         if (helper.h.right == helper.h) {
             helper.publishSolution();
         } else {
-            Column c = helper.h.chooseColumn();
+            Column c = helper.chooseColumn();
             c.cover();
             for (Node r = c.down; r != c; r = r.down) {
                 helper.o.push(r);

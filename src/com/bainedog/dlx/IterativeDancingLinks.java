@@ -17,7 +17,7 @@ public class IterativeDancingLinks extends DancingLinks {
     @Override
     protected void search(DancingLinksHelper helper) throws InterruptedException {
         Stack<Node> stack = new Stack<Node>();
-        stack.push(helper.h.chooseColumn());
+        stack.push(helper.chooseColumn());
         while (!stack.empty()) {
             Node x = stack.pop();
             if (x instanceof Column) {
@@ -47,7 +47,7 @@ public class IterativeDancingLinks extends DancingLinks {
                     if (helper.h.right == helper.h) {
                         helper.publishSolution();
                     } else {
-                        stack.push(helper.h.chooseColumn());
+                        stack.push(helper.chooseColumn());
                     }
                 }
             }

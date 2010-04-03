@@ -95,7 +95,6 @@ abstract class DancingLinks implements DLX {
             this.h = h;
         }
 
-
         void publishSolution() throws InterruptedException {
             List<List<String>> solution = new LinkedList<List<String>>();
             for (Node r : o) {
@@ -113,6 +112,23 @@ abstract class DancingLinks implements DLX {
             queue.put(POISON);
         }
 
+        public Column chooseColumn() {
+            this.candidates.clear();
+            this.candidates.add((Column)h.right);
+            int s = ((Column)h.right).getSize();
+            for (Column j = (Column)(h.right); !j.equals(h); j = (Column)(j.right)) {
+                if (j.getSize() <= s) {
+                    if (j.getSize() < s) {
+                        s = j.getSize();
+                        candidates.clear();
+                    }
+                    candidates.add(j);
+                }
+            }
+            return candidates.get((int)Math.floor(Math.random() * candidates.size()));
+        }
+
+        final List<Column> candidates = new ArrayList<Column>();
         final Column h;
         final Stack<Node> o = new Stack<Node>();
         final BlockingQueue<List<List<String>>> queue = new LinkedBlockingQueue<List<List<String>>>(100);

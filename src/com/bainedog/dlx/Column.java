@@ -4,6 +4,8 @@
  */
 package com.bainedog.dlx;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author andrew
@@ -67,18 +69,6 @@ public final class Column extends Node {
         }
         this.right.left = this;
         this.left.right = this;
-    }
-
-
-    public Column chooseColumn() {
-        Column c = (Column)this.right;
-        int s = c.getSize();
-        for (Column j = (Column)(this.right); !j.equals(this); j = (Column)(j.right)) {
-            if (j.getSize() < s) {
-                c = j; s = j.getSize();
-            }
-        }
-        return c;
     }
 
     public static void stitchRow(Column c, Column... columns) {

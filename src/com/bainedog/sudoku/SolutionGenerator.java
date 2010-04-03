@@ -19,7 +19,7 @@ import java.util.Set;
  *
  * @author baine
  */
-public class SolutionGenerator {
+public abstract class SolutionGenerator {
 
     private final static String ROW = "row";
     private final static String COLUMN = "column";
@@ -72,14 +72,14 @@ public class SolutionGenerator {
         // row constraints
         for (int i = 0; i < length; i++) {
             for (int n = 0; n < length; n++) {
-                columns[index++] = h.addColumn(String.format(formatString, ROW, i, NUMBER, n));
+                columns[index++] = h.addColumn("");
             }
         }
 
         // column constraints
         for (int j = 0; j < length; j++) {
             for (int n = 0; n < length; n++) {
-                columns[index++] = h.addColumn(String.format(formatString, COLUMN, j, NUMBER, n));
+                columns[index++] = h.addColumn("");
             }
         }
 
@@ -133,10 +133,12 @@ public class SolutionGenerator {
                 String[] tokens = h.split(",");
                 for (String token : tokens) {
                     int x = token.indexOf('=');
-                    map.put(token.substring(0, x), Integer.parseInt(token.substring(x+1)));
+                    if (x > -1) {
+                        map.put(token.substring(0, x), Integer.parseInt(token.substring(x+1)));
+                    }
                 }
             }
-            triples.add(new Sudoku.Triple(map.get(ROW), map.get(COLUMN), map.get(NUMBER)));
+            triples.add(Sudoku.Triple.triple(map.get(ROW), map.get(COLUMN), map.get(NUMBER)));
         }
         return new Sudoku(triples);
     }

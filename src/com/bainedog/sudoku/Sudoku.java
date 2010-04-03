@@ -5,6 +5,9 @@
 
 package com.bainedog.sudoku;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,9 +25,13 @@ public final class Sudoku {
         this.triples = triples;
     }
 
+    public Sudoku(int order) {
+        this.order = order;
+        this.triples = new HashSet<Triple>();
+    }
+
     @Override
     public boolean equals(Object other) {
-
         if (other instanceof Sudoku) {
             Sudoku s = (Sudoku)other;
             return this.triples.size() == s.triples.size()
@@ -34,12 +41,34 @@ public final class Sudoku {
         }
     }
 
-    final Set<Triple> triples;
+    public final Set<Triple> triples;
     public final int order;
 
     public static class Triple {
 
-        public Triple(int row, int column, int number) {
+        private static Map<Integer, Map<Integer, Map<Integer, Triple>>> cache = 
+                new HashMap<Integer, Map<Integer, Map<Integer, Triple>>>();
+
+        public static Triple triple(int r, int c, int n) {
+            Map<Integer, Map<Integer, Triple>> row = cache.get(r);
+            if (row == null) {
+                row = new HashMap<Integer, Map<Integer, Triple>>();
+                cache.put(r, row);
+            }
+            Map<Integer, Triple> col = row.get(c);
+            if (col == null) {
+                col = new HashMap<Integer, Triple>();
+                row.put(c, col);
+            }
+            Triple t = col.get(n);
+            if (t == null) {
+                t = new Triple(r, c, n);
+                col.put(n, t);
+            }
+            return t;
+        }
+
+        private Triple(int row, int column, int number) {
             this.row = row;
             this.column = column;
             this.number = number;
