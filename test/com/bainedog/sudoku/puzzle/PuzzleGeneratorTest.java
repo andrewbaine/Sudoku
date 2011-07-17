@@ -59,14 +59,16 @@ public class PuzzleGeneratorTest {
         Iterator<Sudoku> iterator = solutions.iterator();
         
         if (!iterator.hasNext()) {
+            generator.halt();
             return false;
         }
         
         Sudoku solution = iterator.next();
         if (iterator.hasNext()) {
+            generator.halt();
             return false;
         }
-        
+        generator.halt();
         return true;
     }
 

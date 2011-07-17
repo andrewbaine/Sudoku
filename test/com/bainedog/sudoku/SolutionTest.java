@@ -72,6 +72,7 @@ public class SolutionTest {
         
         assertEquals(expectedSolution, actualSolution);
         assertFalse(solutions.iterator().hasNext());
+        generator.halt();
     }
 
     private static Sudoku readSudoku(String fileName) throws FileNotFoundException {
