@@ -7,6 +7,7 @@ package com.bainedog.sudoku;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -55,15 +56,16 @@ public class SolutionTest {
 
     public void testSolutionGenerator(SolutionGenerator generator) throws FileNotFoundException {
         for (int n : new int[] {1,2,25}) {
-            String puzzlePath = "resources/p" + n + ".txt";
+        	InputStream problem = SolutionTest.class.getResourceAsStream("p" + n + ".txt");
+        	InputStream solution = getClass().getResourceAsStream("s" + n + ".txt");
             String solutionPath = "resources/s" + n + ".txt";
-            testSolution(generator, puzzlePath, solutionPath);
+            testSolution(generator, problem, solution);
         }
     }
 
-    private void testSolution(SolutionGenerator generator, String puzzlePath, String solutionPath) throws FileNotFoundException {
-        Sudoku puzzle = readSudoku(puzzlePath);
-        Sudoku expectedSolution = readSudoku(solutionPath);
+    private void testSolution(SolutionGenerator generator, InputStream problem, InputStream solution) throws FileNotFoundException {
+        Sudoku puzzle = readSudoku(problem);
+        Sudoku expectedSolution = readSudoku(solution);
         System.out.println("Puzzle:\n" + Util.toString(puzzle));
 
         Iterable<Sudoku> solutions = generator.solutions(puzzle);
@@ -75,9 +77,9 @@ public class SolutionTest {
         generator.halt();
     }
 
-    private static Sudoku readSudoku(String fileName) throws FileNotFoundException {
+    private static Sudoku readSudoku(InputStream inputStream) throws FileNotFoundException {
         Set<Sudoku.Triple> triples = new HashSet<Sudoku.Triple>();
-        Scanner in = new Scanner(new File(fileName));
+        Scanner in = new Scanner(inputStream);
         int count;
         for (count = 0; in.hasNextLine(); count++) {
             String line = in.nextLine();
