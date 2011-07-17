@@ -32,6 +32,10 @@ public abstract class SolutionGenerator {
         this.dancingLinks = dancingLinks;
     }
 
+    public void halt() {
+        this.dancingLinks.halt();
+    }
+
     public Iterable<Sudoku> solutions(Sudoku puzzle) {
 
         final Column h = SolutionGenerator.header(puzzle);

@@ -5,6 +5,8 @@
 
 package com.bainedog.dlx;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -16,17 +18,17 @@ public class IterativeDancingLinks extends DancingLinks {
 
     @Override
     protected void search(DancingLinksHelper helper) throws InterruptedException {
+        Set<Node> visited = new HashSet<Node>();
         Stack<Node> stack = new Stack<Node>();
         stack.push(helper.chooseColumn());
         while (!stack.empty()) {
             Node x = stack.pop();
             if (x instanceof Column) {
                 Column c = (Column)x;
-                if (c.visited) {
-                    c.visited = false;
+                if (visited.remove(c)) {
                     c.uncover();
                 } else {
-                    c.visited = true;
+                    visited.add(c);
                     c.cover();
                     stack.push(c);
                     for (Node r = c.up; r != c; r = r.up) {
@@ -34,12 +36,11 @@ public class IterativeDancingLinks extends DancingLinks {
                     }
                 }
             } else {
-                if (x.visited) {
-                    x.visited = false;
+                if (visited.remove(x)) {
                     Node r = helper.o.pop();
                     r.eachUncoverColumn();
                 } else {
-                    x.visited = true;
+                    visited.add(x);
                     Node r = x;
                     helper.o.push(r);
                     r.eachCoverColumn();

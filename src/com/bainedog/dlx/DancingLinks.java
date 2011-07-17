@@ -25,9 +25,15 @@ abstract class DancingLinks implements DLX {
     private static final List<List<String>> POISON = new ArrayList<List<String>>();
 
     protected abstract void search(DancingLinksHelper helper) throws InterruptedException;
+    
+    private boolean running = true;
+    public void halt() {
+        running = false;
+    }
 
     public Iterable<List<List<String>>> solutions(final Column h) {
 
+        running = true;
         final DancingLinksHelper helper = new DancingLinksHelper(h);
 
         new Thread(

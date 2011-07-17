@@ -16,7 +16,6 @@ class Node {
     protected Node up;
     protected Node down;
     protected Column column;
-    protected boolean visited;
 
     Node() {
         this.left = this;

@@ -14,5 +14,5 @@ import java.util.List;
 public interface DLX {
 
     Iterable<List<List<String>>> solutions(Column h);
-    
+    public void halt();
 }

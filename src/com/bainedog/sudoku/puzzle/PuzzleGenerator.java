@@ -30,6 +30,8 @@ public class PuzzleGenerator {
 
         Sudoku puzzle = this.solutionGenerator.solutions(new Sudoku(order))
                 .iterator().next();
+        this.solutionGenerator.halt();
+
         ArrayList<Sudoku.Triple> triples = new ArrayList<Sudoku.Triple>(puzzle.triples);
         Collections.shuffle(triples);
 
@@ -59,8 +61,10 @@ public class PuzzleGenerator {
         Iterator<Sudoku> solutions = this.solutionGenerator.solutions(puzzle).iterator();
         if (solutions.hasNext()) {
             solutions.next();
+            this.solutionGenerator.halt();
             return !solutions.hasNext();
         } else {
+            this.solutionGenerator.halt();
             return false;
         }
     }
