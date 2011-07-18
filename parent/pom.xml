@@ -17,6 +17,7 @@
   </modules>
 
   <properties>
+    <parent.version>1.0.0</parent.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
