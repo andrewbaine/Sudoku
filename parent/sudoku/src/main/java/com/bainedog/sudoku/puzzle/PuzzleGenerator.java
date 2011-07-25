@@ -61,8 +61,9 @@ public class PuzzleGenerator {
         Iterator<Sudoku> solutions = this.solutionGenerator.solutions(puzzle).iterator();
         if (solutions.hasNext()) {
             solutions.next();
+            boolean result = !solutions.hasNext();
             this.solutionGenerator.halt();
-            return !solutions.hasNext();
+            return result;
         } else {
             this.solutionGenerator.halt();
             return false;

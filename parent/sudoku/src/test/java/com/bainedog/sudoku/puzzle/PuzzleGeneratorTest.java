@@ -27,11 +27,9 @@ public class PuzzleGeneratorTest {
     @Test
     public void testGeneratePuzzle() {
 
-        System.out.println("generatePuzzle");
         int order = 3;
         Sudoku puzzle = new PuzzleGenerator(new IterativeSolutionGenerator()).generatePuzzle(order);
 
-        System.out.println(Util.toString(puzzle));
         System.out.format("Clues: %s\n", puzzle.triples.size());
         /* Puzzle should have one and only one solution */
         assertTrue(hasOneAndOnlyOneSolution(puzzle));

@@ -58,7 +58,6 @@ public class SolutionTest {
         for (int n : new int[] {1,2,25}) {
         	InputStream problem = SolutionTest.class.getResourceAsStream("p" + n + ".txt");
         	InputStream solution = getClass().getResourceAsStream("s" + n + ".txt");
-            String solutionPath = "resources/s" + n + ".txt";
             testSolution(generator, problem, solution);
         }
     }
